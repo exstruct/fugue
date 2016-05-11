@@ -1,6 +1,6 @@
 # fugue
 
-Plug testing utilities
+Extendable testing utilities for Plug
 
 ## Installation
 
@@ -16,7 +16,7 @@ Plug testing utilities
 
 ## Usage
 
-Fugue extends ExUnit by adding macros for calling Plug applications in an extendable way.
+`Fugue` extends `ExUnit.Case` by adding macros for calling `Plug` applications in an extendable way.
 
 ```elixir
 defmodule Test.MyApp do
