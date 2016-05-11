@@ -42,32 +42,33 @@ defmodule Test.MyApp do
 end
 ```
 
-Notice the setup and assertions are separated by an `after` keyword. The idea is to decouple the test case setup/generation from the actual test case execution. This ends up being useful in many ways:
+Notice the setup and assertions are separated by an `after` keyword. The idea is to decouple the test case setup/generation from the actual test case execution. This ends up being useful in many ways. We could:
 
-* We could generate cases on a single machine and distribute the requests around a cluster
-* We could create benchmarks that exclude the setup time and just test the request rate (maybe even skip assertions entirely)
-* We could serialize the requests into a file and run at a later time, or in a different language or service
+* generate cases on a single machine and distribute the requests around a cluster
+* create benchmarks that exclude the setup time and just test the request rate (maybe even skip assertions entirely)
+* serialize the requests into a file and run at a later time, or in a different language or service
+* chain multiple tests together to create flow tests
 * _insert your crazy idea here_
 
 `Fugue` exposes several overridable functions to support this behavior:
 
-### `execute/2`
+### `execute/3`
 
-`execute` is the lowest level hook. It receives the request struct and a function handle for assertions. The default behavior is to call the `call/1` function followed by the assertions:
+`execute` is the lowest level hook. It receives the request struct and a function handle for assertions. The default behavior is to call the `call/2` function followed by the assertions:
 
 ```elixir
 defmodule Test.MyApp do
   use Fugue
 
-  defp execute(request, assertions) do
+  defp execute(request, assertions, context) do
     request
-    |> call()
+    |> call(context)
     |> assertions.()
   end
 end
 ```
 
-### `call/1`
+### `call/2`
 
 `call` receives the request struct and executes the request. In the case standard `Plug` apps this would look something like:
 
@@ -75,7 +76,7 @@ end
 defmodule Test.MyApp do
   use Fugue
 
-  def call(request) do
+  def call(request, _context) do
     MyApp.call(request, [])
   end
 end
@@ -94,6 +95,6 @@ end
 
 `init_request` is passed the test context and can create the request struct. This is helpful for when something other than `Plug.Conn` is used or the default values for `Plug.Conn` need to be changed.
 
-### `prepare_request/1`
+### `prepare_request/2`
 
-`prepare_request` is called just before calling `execute/2` which allows for any final modifications to the request to be made.
+`prepare_request` is called just before calling `execute/3` which allows for any final modifications to the request to be made.

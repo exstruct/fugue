@@ -2,55 +2,56 @@ defmodule Fugue do
   defmacro __using__(opts) do
     plug = opts[:plug]
     plug_opts = opts[:plug_opts] || []
-    async = Keyword.get(opts, :async, false)
+    ui = opts[:ui] || ExUnit.Case
+    ui_opts = opts[:ui_opts] || []
 
     quote do
-      use ExUnit.Case, async: unquote(async)
+      use unquote(ui), unquote(ui_opts)
       import ExUnit.Case, only: [test: 1] # unimport ExUnit.Case so we can override 'test'
       import unquote(__MODULE__)
       import unquote(__MODULE__).Assertions
       import unquote(__MODULE__).Request
 
       if Code.ensure_loaded?(Plug.Conn) || function_exported?(Plug.Conn, :__struct__, 0) do
-        defp init_request(_) do
+        defp init_request(_context) do
           Plug.Conn.__struct__()
           |> Map.merge(%{request_path: "/",
                          req_headers: [{"accept", "*/*"}]})
         end
 
-        defp prepare_request(conn) do
+        defp prepare_request(conn, _context) do
           Plug.Adapters.Test.Conn.conn(conn, conn.method || "GET", conn.request_path || "/", nil)
         end
       else
-        defp init_request(_) do
+        defp init_request(_context) do
           nil
         end
 
-        defp prepare_request(conn) do
+        defp prepare_request(conn, _context) do
           conn
         end
       end
 
-      defoverridable init_request: 1, prepare_request: 1
+      defoverridable init_request: 1, prepare_request: 2
 
       if unquote(plug) do
         @fugue_plug_opts unquote(plug).init(unquote(plug_opts))
-        defp call(request) do
+        defp call(request, _context) do
           unquote(plug).call(request, @fugue_plug_opts)
         end
-        defoverridable call: 1
       else
-        def call(request) do
+        def call(request, _context) do
           request
         end
       end
+      defoverridable call: 2
 
-      defp execute(request, assertions) do
+      defp execute(request, assertions, context) do
         request
-        |> call()
+        |> call(context)
         |> assertions.()
       end
-      defoverridable execute: 2
+      defoverridable execute: 3
     end
   end
 
@@ -81,8 +82,8 @@ defmodule Fugue do
         assertions = unquote({:fn, [], assertions})
 
         request
-        |> prepare_request()
-        |> execute(assertions)
+        |> prepare_request(var!(fugue_context))
+        |> execute(assertions, var!(fugue_context))
       end
     end
   end
