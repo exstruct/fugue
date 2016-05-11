@@ -70,7 +70,13 @@ end
 `call` receives the request struct and executes the request. In the case standard `Plug` apps this would look something like:
 
 ```elixir
-MyApp.call(request, [])
+defmodule Test.MyApp do
+  use Fugue
+
+  def call(request) do
+    MyApp.call(request, [])
+  end
+end
 ```
 
 When using `Fugue`, you may pass `:plug` and `:plug_opts` to the default `call` implementation:
