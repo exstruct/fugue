@@ -8,9 +8,11 @@ Plug testing utilities
 
   1. Add concerto your list of dependencies in `mix.exs`:
 
-        def deps do
-          [{:fugue, "~> 0.1.0"}]
-        end
+  ```elixir
+  def deps do
+    [{:fugue, "~> 0.1.0"}]
+  end
+  ```
 
 ## Usage
 
@@ -53,7 +55,7 @@ Notice the setup and assertions are separated by an `after` keyword. The idea is
 
 `execute` is the lowest level hook. It receives the request struct and a function handle for assertions. The default behavior is to call the `call/1` function followed by the assertions:
 
-```
+```elixir
 defmodule Test.MyApp do
   use Fugue
 
