@@ -65,9 +65,9 @@ defmodule Fugue.Assertions do
     def unquote(:"#{call}_transition")(conn, expected) do
       actual = case get_header(conn, "location") do
         nil ->
-          nil
+          %URI{}
         actual ->
-          uri = URI.parse(actual)
+          URI.parse(actual)
       end
 
       equals? = (actual.scheme || to_string(conn.scheme)) == expected.scheme &&
