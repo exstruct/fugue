@@ -5,9 +5,14 @@ defmodule Fugue do
     ui = opts[:ui] || ExUnit.Case
     ui_opts = opts[:ui_opts] || []
 
+    # unimport the interface so we can override 'test'
+    ui_unimport = function_exported?(ui, :test, 1)
+      && [test: 1]
+      || []
+
     quote do
       use unquote(ui), unquote(ui_opts)
-      import ExUnit.Case, only: [test: 1] # unimport ExUnit.Case so we can override 'test'
+      import unquote(ui), only: unquote(ui_unimport)
       import unquote(__MODULE__)
       import unquote(__MODULE__).Assertions
       import unquote(__MODULE__).Request
