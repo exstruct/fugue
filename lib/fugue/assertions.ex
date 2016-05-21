@@ -81,6 +81,31 @@ defmodule Fugue.Assertions do
         message: "Expected transition to #{expected} but got #{actual}"])
       conn
     end
+
+    defmacro unquote(:"#{call}_term_match")(actual, expected, message \\ "Term match failed") do
+      call = unquote(call)
+      expected_code = expected |> Macro.escape()
+      {expected, vars, aliases} = format_match(expected)
+
+      quote do
+        actual = unquote(actual)
+        expected_code = unquote(expected_code)
+
+        unquote_splicing(vars)
+
+        ExUnit.Assertions.unquote(call)(match?(unquote(expected), actual), [
+          expr: quote do
+            unquote(expected_code) = unquote(Macro.escape(actual))
+          end,
+          message: unquote(message)
+        ])
+
+        unquote(expected) = actual
+        unquote_splicing(aliases)
+
+        actual
+      end
+    end
   end
 
   defp get_header(conn, name) do
@@ -90,5 +115,47 @@ defmodule Fugue.Assertions do
       {_, value} ->
         value
     end
+  end
+
+  @term_match :__fugue_term_match__
+  @term_vars :__fugue_term_vars__
+
+  defp format_match(ast) do
+    ast = Macro.prewalk(ast, fn
+      ({_, [{unquote(@term_match), true}], _} = expr) ->
+        expr
+      ({call, _, context} = expr) when is_atom(call) and is_atom(context) ->
+        acc_var(expr)
+      ({call, _, _} = expr) when is_tuple(call) ->
+        acc(expr)
+      ({call, _, _} = expr) when not call in [:{}, :%{}, :_, :|, :^, :=] ->
+        acc(expr)
+      (expr) ->
+        expr
+    end)
+    {ast, acc(), acc_var()}
+  end
+  defp acc do
+    Process.delete(@term_match) || []
+  end
+  defp acc(expr) do
+    acc = Process.get(@term_match, [])
+    var = {:"_@term_#{length(acc)}", [{@term_match, true}], __MODULE__}
+    Process.put(@term_match, [quote do
+                                unquote(var) = unquote(expr)
+                              end | acc])
+    {:^, [], [var]}
+  end
+
+  defp acc_var do
+    Process.delete(@term_vars) || []
+  end
+  defp acc_var(var) do
+    acc = Process.get(@term_vars, [])
+    alias_var = Macro.var(:"_@term_alias_#{length(acc)}", __MODULE__)
+    Process.put(@term_vars, [quote do
+                               unquote(var) = unquote(alias_var)
+                             end | acc])
+    alias_var
   end
 end

@@ -1,4 +1,4 @@
-# fugue
+# fugue  [![Build Status](https://travis-ci.org/exstruct/fugue.svg?branch=master)](https://travis-ci.org/exstruct/fugue) [![Hex.pm](https://img.shields.io/hexpm/v/fugue.svg?style=flat-square)](https://hex.pm/packages/fugue) [![Hex.pm](https://img.shields.io/hexpm/dt/fugue.svg?style=flat-square)](https://hex.pm/packages/fugue)
 
 Extendable testing utilities for Plug
 

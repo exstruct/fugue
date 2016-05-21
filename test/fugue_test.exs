@@ -40,4 +40,16 @@ defmodule FugueTest do
     |> refute_transition("/bar")
     |> assert_transition("http://foo.example.com/foo")
   end
+
+  test "assert_term_match" do
+    actual = %{"foo" => "\"bar\"", "baz" => 123}
+
+    actual
+    |> assert_term_match(%{
+      "foo" => bar = inspect("bar"),
+      "baz" => _
+    })
+
+    assert bar == "\"bar\""
+  end
 end
