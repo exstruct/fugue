@@ -81,30 +81,50 @@ defmodule Fugue.Assertions do
         message: "Expected transition to #{expected} but got #{actual}"])
       conn
     end
+  end
 
-    defmacro unquote(:"#{call}_term_match")(actual, expected, message \\ "Term match failed") do
-      call = unquote(call)
-      expected_code = expected |> Macro.escape()
-      {expected, vars, aliases} = format_match(expected)
+  defmacro assert_term_match(actual, expected, message \\ "Term match failed") do
+    expected_code = expected |> Macro.escape()
+    {expected, vars, aliases} = format_match(expected)
 
-      quote do
-        actual = unquote(actual)
-        expected_code = unquote(expected_code)
+    quote do
+      actual = unquote(actual)
+      expected_code = unquote(expected_code)
 
-        unquote_splicing(vars)
+      unquote_splicing(vars)
 
-        ExUnit.Assertions.unquote(call)(match?(unquote(expected), actual), [
-          expr: quote do
-            unquote(expected_code) = unquote(Macro.escape(actual))
-          end,
-          message: unquote(message)
-        ])
+      ExUnit.Assertions.assert(match?(unquote(expected), actual), [
+        expr: quote do
+          unquote(expected_code) = unquote(Macro.escape(actual))
+        end,
+        message: unquote(message)
+      ])
 
-        unquote(expected) = actual
-        unquote_splicing(aliases)
+      unquote(expected) = actual
+      unquote_splicing(aliases)
 
-        actual
-      end
+      actual
+    end
+  end
+
+  defmacro refute_term_match(actual, expected, message \\ "Term match expected to fail") do
+    expected_code = expected |> Macro.escape()
+    {expected, vars, _} = format_match(expected)
+
+    quote do
+      actual = unquote(actual)
+      expected_code = unquote(expected_code)
+
+      unquote_splicing(vars)
+
+      ExUnit.Assertions.refute(match?(unquote(expected), actual), [
+        expr: quote do
+          unquote(expected_code) = unquote(Macro.escape(actual))
+        end,
+        message: unquote(message)
+      ])
+
+      actual
     end
   end
 
@@ -124,7 +144,7 @@ defmodule Fugue.Assertions do
     ast = Macro.prewalk(ast, fn
       ({_, [{unquote(@term_match), true} | _], _} = expr) ->
         expr
-      ({call, _, context} = expr) when is_atom(call) and is_atom(context) ->
+      ({call, _, context} = expr) when is_atom(call) and is_atom(context) and call != :_ ->
         acc_var(expr)
       ({call, _, _} = expr) when is_tuple(call) ->
         acc(expr)

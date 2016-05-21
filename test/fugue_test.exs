@@ -60,4 +60,21 @@ defmodule FugueTest do
     map
     |> assert_term_match(%{"title" => ^title})
   end
+
+  test "wildcard assert_term_match" do
+    map = %{"title" => "foo"}
+
+    map
+    |> assert_term_match(%{"title" => _})
+  end
+
+  test "refute_term_match" do
+    actual = %{"foo" => "\"bar\"", "baz" => 123}
+
+    actual
+    |> refute_term_match(%{
+      "foo" => inspect("foo"),
+      "baz" => _
+    })
+  end
 end
