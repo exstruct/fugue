@@ -122,7 +122,7 @@ defmodule Fugue.Assertions do
 
   defp format_match(ast) do
     ast = Macro.prewalk(ast, fn
-      ({_, [{unquote(@term_match), true}], _} = expr) ->
+      ({_, [{unquote(@term_match), true} | _], _} = expr) ->
         expr
       ({call, _, context} = expr) when is_atom(call) and is_atom(context) ->
         acc_var(expr)
@@ -130,6 +130,8 @@ defmodule Fugue.Assertions do
         acc(expr)
       ({call, _, _} = expr) when not call in [:{}, :%{}, :_, :|, :^, :=] ->
         acc(expr)
+      ({:^, meta, [{var, var_meta, var_context}]}) ->
+        {:^, meta, [{var, [{@term_match, true} | var_meta], var_context}]}
       (expr) ->
         expr
     end)
@@ -144,7 +146,7 @@ defmodule Fugue.Assertions do
     Process.put(@term_match, [quote do
                                 unquote(var) = unquote(expr)
                               end | acc])
-    {:^, [], [var]}
+    {:^, [{@term_match, true}], [var]}
   end
 
   defp acc_var do

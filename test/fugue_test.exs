@@ -52,4 +52,12 @@ defmodule FugueTest do
 
     assert bar == "\"bar\""
   end
+
+  test "other assert_term_match" do
+    title = "Hello, world"
+    map = %{"title" => title}
+
+    map
+    |> assert_term_match(%{"title" => ^title})
+  end
 end
