@@ -148,7 +148,7 @@ defmodule Fugue.Assertions do
         acc_var(expr)
       ({call, _, _} = expr) when is_tuple(call) ->
         acc(expr)
-      ({call, _, _} = expr) when not call in [:{}, :%{}, :_, :|, :^, :=] ->
+      ({call, _, _} = expr) when not call in [:{}, :%{}, :_, :|, :^, :=, :<>] ->
         acc(expr)
       ({:^, meta, [{var, var_meta, var_context}]}) ->
         {:^, meta, [{var, [{@term_match, true} | var_meta], var_context}]}

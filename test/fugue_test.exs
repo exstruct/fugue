@@ -68,6 +68,15 @@ defmodule FugueTest do
     |> assert_term_match(%{"title" => _})
   end
 
+  test "bin concat assert_term_match" do
+    map = %{"title" => "hello, world"}
+
+    map
+    |> assert_term_match(%{"title" => "hello, " <> name})
+
+    assert name == "world"
+  end
+
   test "refute_term_match" do
     actual = %{"foo" => "\"bar\"", "baz" => 123}
 
