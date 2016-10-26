@@ -17,7 +17,7 @@ defmodule Fugue.Mixfile do
   end
 
   defp deps do
-    [{ :plug, "~> 1.0", optional: true }]
+    [{ :plug, "~> 1.2", optional: true }]
   end
 
   defp package do
