@@ -4,7 +4,7 @@ defmodule Fugue.Mixfile do
   def project do
     [app: :fugue,
      description: "Extendable testing utilities for Plug",
-     version: "0.1.3",
+     version: "0.1.4",
      elixir: "~> 1.0",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -17,7 +17,8 @@ defmodule Fugue.Mixfile do
   end
 
   defp deps do
-    [{ :plug, "~> 1.2", optional: true }]
+    [{:plug, "~> 1.2", optional: true},
+     {:ex_doc, ">= 0.0.0", only: :dev}]
   end
 
   defp package do
