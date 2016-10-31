@@ -81,6 +81,20 @@ defmodule Fugue.Assertions do
         message: "Expected transition to #{expected} but got #{actual}"])
       conn
     end
+
+    defmacro unquote(:"#{call}_json")(conn, match) do
+      call = unquote(call)
+
+      quote do
+        conn = unquote(conn)
+        parsed_body = conn.private[:fugue_resp_json_body] || Poison.decode!(conn.resp_body)
+        conn = Plug.Conn.put_private(conn, :fugue_resp_json_body, parsed_body)
+
+        unquote(:"#{call}_term_match")(parsed_body, unquote(match), "Expected JSON response body to match")
+
+        conn
+      end
+    end
   end
 
   defmacro assert_term_match(actual, expected, message \\ "Term match failed") do

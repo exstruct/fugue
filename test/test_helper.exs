@@ -7,6 +7,11 @@ defmodule FugueSubject do
     options
   end
 
+  def call(%{request_path: "/json"} = conn, _opts) do
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Poison.encode!(%{"hello" => "world"}))
+  end
   def call(conn, _opts) do
     conn
     |> put_resp_content_type("text/plain")

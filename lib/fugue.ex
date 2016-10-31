@@ -25,7 +25,12 @@ defmodule Fugue do
         end
 
         defp prepare_request(conn, _context) do
-          Plug.Adapters.Test.Conn.conn(conn, conn.method || "GET", conn.request_path || "/", nil)
+          Plug.Adapters.Test.Conn.conn(
+            conn,
+            conn.method || "GET",
+            conn.request_path || "/",
+            conn.private[:fugue_body]
+          )
         end
       else
         defp init_request(_context) do

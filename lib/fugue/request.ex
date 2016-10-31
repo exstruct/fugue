@@ -92,4 +92,24 @@ defmodule Fugue.Request do
       conn_put(:remote_ip, ip)
     end
   end
+
+  defmacro cookie(key, value) do
+    quote do
+      header("cookie", URI.encode_query(Map.put(%{}, unquote(key), unquote(value))))
+    end
+  end
+
+  defmacro body(body) do
+    quote do
+      var!(conn) = Plug.Conn.put_private(var!(conn), :fugue_body, unquote(body))
+    end
+  end
+
+  defmacro json_body(body) do
+    quote do
+      body(Poison.encode!(unquote(body)))
+      header("content-type", "application/json")
+      var!(conn)
+    end
+  end
 end

@@ -86,4 +86,14 @@ defmodule FugueTest do
       "baz" => _
     })
   end
+
+  test "assert_json" do
+    request do
+      path "/json"
+    end
+  after conn ->
+    conn
+    |> assert_status(200)
+    |> assert_json(%{"hello" => "worl" <> _})
+  end
 end
