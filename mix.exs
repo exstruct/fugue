@@ -17,7 +17,8 @@ defmodule Fugue.Mixfile do
   end
 
   defp deps do
-    [{:poison, ">= 0.0.0", optional: true},
+    [{:mimetype_parser, "~> 0.1.0"},
+     {:poison, ">= 0.0.0", optional: true},
      {:plug, ">= 1.2.0", optional: true},
      {:ex_doc, ">= 0.0.0", only: :dev}]
   end
