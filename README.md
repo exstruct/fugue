@@ -6,7 +6,7 @@ Extendable testing utilities for Plug
 
 `Fugue` is [available in Hex](https://hex.pm/docs/publish) and can be installed as:
 
-  1. Add concerto your list of dependencies in `mix.exs`:
+  1. Add fugue your list of dependencies in `mix.exs`:
 
   ```elixir
   def deps do
