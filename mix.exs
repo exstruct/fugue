@@ -8,6 +8,7 @@ defmodule Fugue.Mixfile do
      elixir: "~> 1.0",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     consolidate_protocols: Mix.env == :prod,
      deps: deps,
      package: package]
   end

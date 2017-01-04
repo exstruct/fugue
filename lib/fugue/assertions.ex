@@ -6,7 +6,7 @@ defmodule Fugue.Assertions do
       a = conn.status
       e = status_code
       ExUnit.Assertions.unquote(call)(a == e, [
-        lhs: a,
+        left: a,
         message: "Expected status code #{inspect(e)}, got #{inspect(a)}"])
       conn
     end
@@ -14,7 +14,7 @@ defmodule Fugue.Assertions do
     def unquote(:"#{call}_success_status")(conn) do
       a = conn.status
       ExUnit.Assertions.unquote(call)(a < 400, [
-        lhs: a,
+        left: a,
         message: "Expected status code #{inspect(a)} to be successful (< 400)"])
       conn
     end
@@ -22,7 +22,7 @@ defmodule Fugue.Assertions do
     def unquote(:"#{call}_error_status")(conn) do
       a = conn.status
       ExUnit.Assertions.unquote(call)(a >= 400, [
-        lhs: a,
+        left: a,
         message: "Expected status code #{inspect(a)} to be an error (>= 400)"])
       conn
     end
@@ -50,8 +50,8 @@ defmodule Fugue.Assertions do
       end
 
       ExUnit.Assertions.unquote(call)(contains?, [
-        lhs: a,
-        rhs: e,
+        left: a,
+        right: e,
         message: "Expected response body to contain #{inspect(e)}, got:\n#{indented.()}"])
       conn
     end
@@ -76,8 +76,8 @@ defmodule Fugue.Assertions do
                 actual.path == expected.path
 
       ExUnit.Assertions.unquote(call)(equals?, [
-        lhs: actual,
-        rhs: expected,
+        left: actual,
+        right: expected,
         message: "Expected transition to #{expected} but got #{actual}"])
       conn
     end

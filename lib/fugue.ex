@@ -48,6 +48,10 @@ defmodule Fugue do
         @fugue_plug_opts unquote(plug).init(unquote(plug_opts))
         defp call(request, _context) do
           unquote(plug).call(request, @fugue_plug_opts)
+        catch
+          _, _ ->
+            {status, headers, body} = Plug.Test.sent_resp(request)
+            %{request | status: status, resp_headers: headers, resp_body: body, state: :sent}
         end
       else
         def call(request, _context) do

@@ -1,5 +1,5 @@
-defmodule FugueTest do
-  use Fugue, plug: FugueSubject
+defmodule Test.Fugue do
+  use Fugue, plug: Test.Fugue.Subject
 
   test "second" do
     assert 1 + 1 == 2
@@ -95,5 +95,23 @@ defmodule FugueTest do
     conn
     |> assert_status(200)
     |> assert_json(%{"hello" => "worl" <> _})
+  end
+
+  test "Plug.Exception" do
+    request do
+      path "/error"
+    end
+  after conn ->
+    conn
+    |> assert_status(400)
+  end
+
+  test "Plug.Conn.ErrorWrapper" do
+    request do
+      path "/wrapped-error"
+    end
+  after conn ->
+    conn
+    |> assert_status(400)
   end
 end

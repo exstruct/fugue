@@ -1,5 +1,16 @@
-defmodule FugueSubject do
+defmodule Test.Fugue.Error do
+  defexception [:message]
+
+  defimpl Plug.Exception do
+    def status(_) do
+      400
+    end
+  end
+end
+
+defmodule Test.Fugue.Subject do
   import Plug.Conn
+  use Plug.ErrorHandler
 
   def init(options) do
     # initialize options
@@ -7,6 +18,13 @@ defmodule FugueSubject do
     options
   end
 
+  def call(%{request_path: "/error"}, _opts) do
+    raise Test.Fugue.Error, "Uh oh!"
+  end
+  def call(%{request_path: "/wrapped-error"} = conn, _opts) do
+    exception = %Test.Fugue.Error{message: "Uh oh!"}
+    raise Plug.Conn.WrapperError, conn: conn, kind: :error, reason: exception, stack: []
+  end
   def call(%{request_path: "/json"} = conn, _opts) do
     conn
     |> put_resp_content_type("application/json")
