@@ -4,7 +4,7 @@ defmodule Fugue.Mixfile do
   def project do
     [app: :fugue,
      description: "Extendable testing utilities for Plug",
-     version: "0.1.5",
+     version: "0.1.6",
      elixir: "~> 1.0",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -28,6 +28,6 @@ defmodule Fugue.Mixfile do
     [files: ["lib", "mix.exs", "README*"],
      maintainers: ["Cameron Bytheway"],
      licenses: ["MIT"],
-     links: %{"GitHub" => "https://github.com/camshaft/fugue"}]
+     links: %{"GitHub" => "https://github.com/exstruct/fugue"}]
   end
 end
