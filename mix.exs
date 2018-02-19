@@ -9,8 +9,8 @@ defmodule Fugue.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      consolidate_protocols: Mix.env == :prod,
-     deps: deps,
-     package: package]
+     deps: deps(),
+     package: package()]
   end
 
   def application do
@@ -20,7 +20,7 @@ defmodule Fugue.Mixfile do
   defp deps do
     [{:mimetype_parser, "~> 0.1.0"},
      {:poison, ">= 0.0.0", optional: true},
-     {:plug, ">= 1.2.0", optional: true},
+     {:plug, ">= 1.4.0", optional: true},
      {:ex_doc, ">= 0.0.0", only: :dev}]
   end
 
